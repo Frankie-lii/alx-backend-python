@@ -3,7 +3,7 @@
 import sqlite3
 import functools
 
-#### decorator to log SQL queries
+# Decorator that logs SQL queries
 def log_queries():
         def decorator(func):
                     @functools.wraps(func)
@@ -23,10 +23,9 @@ def log_queries():
                                                                                             conn.close()
                                                                                                 return results
 
-                                                                                            #### fetch users while logging the query
-                                                                                            users = fetch_all_users(query="SELECT * FROM users")
-
-                                                                                            # Optional: print the results
-                                                                                            for user in users:
-                                                                                                    print(user)
+                                                                                            # Fetch users while logging the query
+                                                                                            if __name__ == "__main__":
+                                                                                                    users = fetch_all_users(query="SELECT * FROM users")
+                                                                                                        for user in users:
+                                                                                                                    print(user)
 
