@@ -1,22 +1,14 @@
-INSTALLED_APPS = [
-    ...
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'django_filters',
-    'chats',
-]
+MIDDLEWARE = [
+    # other default middlewares...
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'chats.pagination.CustomPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-}
+    # ✅ Your custom middleware
+    'chats.middleware.RequestLoggingMiddleware',
+]
 
