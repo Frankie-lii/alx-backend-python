@@ -1,5 +1,4 @@
 MIDDLEWARE = [
-    # other default middlewares...
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -8,7 +7,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # ✅ Your custom middleware
+    # Custom middlewares
     'chats.middleware.RequestLoggingMiddleware',
+    'chats.middleware.RestrictAccessByTimeMiddleware',  # ✅ Add this
 ]
 
