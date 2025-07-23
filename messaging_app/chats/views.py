@@ -1,16 +1,23 @@
-from rest_framework import viewsets, filters
-from .models import Conversation, Message
-from .serializers import ConversationSerializer, MessageSerializer
-
-class ConversationViewSet(viewsets.ModelViewSet):
-    queryset = Conversation.objects.all()
-    serializer_class = ConversationSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['participants__username']  # Example filter
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Message
+from .serializers import MessageSerializer
+from .permissions import IsParticipantOfConversation
+from .filters import MessageFilter
+from .pagination import CustomPagination
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['sender__username', 'content']
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        return Message.objects.filter(conversation__participants=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
 
