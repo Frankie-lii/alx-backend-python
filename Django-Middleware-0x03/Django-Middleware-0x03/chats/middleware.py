@@ -7,8 +7,10 @@ class RestrictAccessByTimeMiddleware:
 
     def __call__(self, request):
         current_hour = datetime.now().hour
-        # Only allow access between 18 (6PM) and 21 (9PM)
+
+        # Restrict access outside 6 PM (18) to 9 PM (21)
         if current_hour < 18 or current_hour >= 21:
-            return HttpResponseForbidden("Chat access is only allowed between 6PM and 9PM.")
+            return HttpResponseForbidden("Access to chat is only allowed between 6PM and 9PM.")
+
         return self.get_response(request)
 
