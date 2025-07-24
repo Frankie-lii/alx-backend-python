@@ -24,5 +24,6 @@ class RestrictAccessByTimeMiddleware:
 
 
     'chats.middleware.RestrictAccessByTimeMiddleware',
+    'chats.middleware.OffensiveLanguageMiddleware',
 ]
 
