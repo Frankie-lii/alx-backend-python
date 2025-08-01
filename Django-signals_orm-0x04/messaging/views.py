@@ -4,12 +4,7 @@ from .models import Message
 
 @login_required
 def unread_inbox_view(request):
-    unread_messages = (
-        Message.objects
-        .filter(receiver=request.user, read=False)
-        .only('id', 'sender__username', 'content', 'timestamp')
-        .select_related('sender')
-    )
+    unread_messages = Message.unread.unread_for_user(request.user)
     return render(request, 'messaging/unread_inbox.html', {
         'messages': unread_messages
     })
