@@ -1,12 +1,16 @@
+from django.shortcuts import render
+from .models import Message
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
 
 @login_required
-def delete_user(request):
+def inbox_view(request):
     user = request.user
-    logout(request)
-    user.delete()
-    return redirect('home')  # or any route you want to send users after account deletion
+
+    # ✅ Top-level messages only (not replies)
+    top_messages = Message.objects.filter(receiver=user, parent_message__isnull=True)\
+        .select_related('sender', 'receiver')\
+        .prefetch_related('replies', 'replies__sender', 'replies__receiver')
+
+    return render(request, 'messaging/inbox.html', {'messages': top_messages})
+
 
