@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# kubctl-0x02 - Deploy Blue & Green versions and check logs
+
+set -e
+
+echo "=== Deploying Blue version ==="
+kubectl apply -f messaging_app/blue_deployment.yaml
+kubectl apply -f messaging_app/kubeservice.yaml
+
+echo "=== Deploying Green version (new release) ==="
+kubectl apply -f messaging_app/green_deployment.yaml
+
+echo "=== Checking pods ==="
+kubectl get pods -l app=messaging-app
+
+echo "=== Checking logs for Green version ==="
+GREEN_POD=$(kubectl get pods -l version=green -o jsonpath='{.items[0].metadata.name}')
+kubectl logs "$GREEN_POD"
+
+echo "✅ Blue-Green deployment applied."
+echo "💡 To switch traffic to green: edit messaging_app/kubeservice.yaml and change version=blue to version=green, then run:"
+echo "   kubectl apply -f messaging_app/kubeservice.yaml"
+
