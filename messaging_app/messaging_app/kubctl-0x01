@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# kubctl-0x01 - Scale Django Messaging App to 3 replicas and test
+
+set -e
+
+DEPLOYMENT_NAME="django-messaging-app"
+SERVICE_NAME="messaging-app-service"
+PORT=8000
+
+echo "=== Scaling Kubernetes Deployment ==="
+
+# Step 1: Scale the deployment to 3 replicas
+echo "🚀 Scaling deployment $DEPLOYMENT_NAME to 3 replicas..."
+kubectl scale deployment "$DEPLOYMENT_NAME" --replicas=3
+
+# Step 2: Verify multiple pods are running
+echo "🔍 Verifying running pods..."
+kubectl get pods -l app=messaging-app
+
+# Step 3: Run load testing with wrk
+if ! command -v wrk >/dev/null 2>&1; then
+    echo "❌ wrk is not installed. Please install it first:"
+    echo "   https://github.com/wg/wrk"
+    exit 1
+fi
+
+echo "📈 Performing load testing using wrk..."
+# Get one of the pod IPs
+POD_IP=$(kubectl get pod -l app=messaging-app -o jsonpath='{.items[0].status.podIP}')
+wrk -t4 -c100 -d30s http://$POD_IP:$PORT/
+
+# Step 4: Monitor resource usage
+if ! kubectl top pods >/dev/null 2>&1; then
+    echo "⚠️ Metrics server not found. Please install it to monitor resource usage:"
+    echo "   https://github.com/kubernetes-sigs/metrics-server"
+else
+    echo "📊 Monitoring resource usage..."
+    kubectl top pods
+fi
+
+echo "✅ Scaling and testing complete."
+
