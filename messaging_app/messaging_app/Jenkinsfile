@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-        stage('Setup Python') {
+        stage('Setup Python Environment') {
             steps {
                 sh '''
                 python3 -m venv $PYTHON_ENV
