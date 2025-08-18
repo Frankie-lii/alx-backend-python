@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON_ENV = "venv"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/alx-backend-python.git',
+                    credentialsId: 'your-github-credentials-id'
+            }
+        }
+
+        stage('Setup Python') {
+            steps {
+                sh '''
+                python3 -m venv $PYTHON_ENV
+                source $PYTHON_ENV/bin/activate
+                pip install --upgrade pip
+                pip install -r messaging_app/requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                source $PYTHON_ENV/bin/activate
+                pytest messaging_app/tests --junitxml=report.xml
+                '''
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'report.xml', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        always {
+            junit 'report.xml'
+        }
+    }
+}
+
